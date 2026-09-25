@@ -1034,8 +1034,8 @@ def final_cta_footer() -> str:
       <div>
         <h3>{{{{BRAND}}}}</h3>
         <p>Water damage restoration in Farmers Branch, TX 75234 and 75244.<br>Open 24 hours, 7 days a week.</p>
+        <p>12801 Midway Rd, Farmers Branch, TX 75244</p>
         <p><a href="tel:{{{{PHONE}}}}">{{{{PHONE}}}}</a><br><a href="mailto:{{{{EMAIL}}}}">{{{{EMAIL}}}}</a></p>
-        <p class="disclaimer">Services may be performed by independent local providers.</p>
       </div>
       <div>
         <h3>Top services</h3>
@@ -1111,13 +1111,21 @@ def sidebar_html(ptype: str, related: list, nearby: list) -> str:
     return f'''<aside class="sidebar">
   <div class="side-call">
     <p class="open-note">Open 24/7</p>
-    <a class="phone" href="tel:{{{{PHONE}}}}">{{{{PHONE}}}}</a>
     {phone_btn()}
   </div>
   <div class="side-related">
     <h2>{esc(title)}</h2>
     <ul class="area-list">{lis}</ul>
   </div>
+</aside>'''
+
+
+def sticky_cta_rail() -> str:
+    """Sticky phone + free estimate rail for about, privacy, and terms."""
+    return f'''<aside class="sticky-cta-rail" aria-label="Contact options">
+  <p class="open-note">Open 24/7</p>
+  {phone_btn()}
+  <a class="btn btn-ghost btn-estimate" href="tel:{{{{PHONE}}}}">Free estimate</a>
 </aside>'''
 
 
@@ -1189,6 +1197,11 @@ def apply_site(content: str) -> str:
     content = content.replace("Then call us.", "Then reach us.")
     content = content.replace("Then call us", "Then reach us")
     content = content.replace("<strong>Call us</strong>", "<strong>Reach us</strong>")
+    content = re.sub(
+        r'\s*<p class="disclaimer">Services may be performed by independent local providers\.</p>\s*',
+        "\n",
+        content,
+    )
     return content
 
 
@@ -1237,6 +1250,23 @@ def update_homepage() -> None:
         "Now call <a href=\"tel:{{PHONE}}\">{{PHONE}}</a> so drying can start.",
         'Reach us at <a href="tel:{{PHONE}}">{{PHONE}}</a> so drying can start.',
     )
+    html_text = re.sub(
+        r'\s*<p class="disclaimer">Services may be performed by independent local providers\.</p>\s*',
+        "\n",
+        html_text,
+    )
+    # Ensure footer address
+    if "12801 Midway Rd" not in html_text:
+        html_text = html_text.replace(
+            "<p><a href=\"tel:{{PHONE}}\">{{PHONE}}</a><br><a href=\"mailto:{{EMAIL}}\">{{EMAIL}}</a></p>",
+            "<p>12801 Midway Rd, Farmers Branch, TX 75244</p>\n        <p><a href=\"tel:{{PHONE}}\">{{PHONE}}</a><br><a href=\"mailto:{{EMAIL}}\">{{EMAIL}}</a></p>",
+            1,
+        )
+        html_text = html_text.replace(
+            "<p><a href=\"tel:2148364927\">(214) 836-4927</a><br><a href=\"mailto:hello@branchguard.com\">hello@branchguard.com</a></p>",
+            "<p>12801 Midway Rd, Farmers Branch, TX 75244</p>\n        <p><a href=\"tel:2148364927\">(214) 836-4927</a><br><a href=\"mailto:hello@branchguard.com\">hello@branchguard.com</a></p>",
+            1,
+        )
     (ROOT / "index.html").write_text(apply_site(html_text), encoding="utf-8")
     print("Updated homepage")
 
@@ -1292,13 +1322,7 @@ def build_md_page(md_path: Path) -> None:
         jsonld = json_ld_blocks(meta, ptype, [], crumbs)
 
     show_side = has_sidebar(ptype)
-    # About: no sidebar per instructions
-    if ptype == "about":
-        show_side = False
-    if ptype == "legal":
-        show_side = False
-
-    # For about, still show FAQ in content (render_body handles it)
+    sticky_rail = ptype in ("about", "legal")
 
     crumbs_mark = crumbs_html(crumbs)
     current = nav_current(url)
@@ -1315,7 +1339,14 @@ def build_md_page(md_path: Path) -> None:
   </div>
 </section>'''
 
-    if show_side:
+    if sticky_rail:
+        grid = f'''<div class="page-grid page-grid-sticky">
+  <div class="content-col">
+{content_html}
+  </div>
+  {sticky_cta_rail()}
+</div>'''
+    elif show_side:
         grid = f'''<div class="page-grid">
   <div class="content-col">
 {content_html}
