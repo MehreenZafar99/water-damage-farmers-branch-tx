@@ -211,11 +211,18 @@ section { padding: clamp(3.5rem, 7vw, 6rem) 0; }
 /* Cards */
 .trust { padding: 0 0 clamp(2rem,4vw,3rem); margin-top: -1rem; position: relative; z-index: 2; }
 .trust-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
-.trust-card { background: #fff; border: 1px solid var(--stone); border-radius: 16px; padding: 1.2rem 1.2rem; display: grid; grid-template-columns: 44px 1fr; gap: .9rem; align-items: start; box-shadow: 0 14px 30px -24px rgba(59,29,64,.5); }
-.trust-card h3 { font-size: 1.02rem; margin-bottom: .2rem; }
-.trust-card p { margin: 0; font-size: .92rem; color: var(--muted); line-height: 1.5; }
-.t-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--plum); color: #fff; display: grid; place-items: center; }
-.t-icon svg { width: 22px; height: 22px; }
+.trust-card {
+  background: var(--lilac);
+  border: 1px solid var(--stone);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+.trust-card h3 { font-size: 1rem; margin: 0; color: var(--plum-deep); }
+.t-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--plum); color: #fff; display: grid; place-items: center; flex: none; }
+.t-icon svg { width: 20px; height: 20px; }
 
 .svc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
 .svc-card { position: relative; display: flex; flex-direction: column; background: #fff; border: 1px solid var(--stone); border-radius: var(--radius-lg); padding: 1.6rem; text-decoration: none; color: var(--ink); overflow: hidden; transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
